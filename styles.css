@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.header-button {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    background-color: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 4px;
+    position: absolute;
+    left: 20px;
+}
+
+.header-button:hover {
+    background-color: #e0e0e0;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+}
+
+#password {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#strength-meter {
+    margin: 15px 0;
+}
+
+#strength-text {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#strength-bar {
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+#strength-bar.weak { background: #ff4d4d; width: 33%; }
+#strength-bar.medium { background: #ffd700; width: 66%; }
+#strength-bar.strong { background: #4caf50; width: 100%; }
+
+#criteria-feedback {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+#suggestions {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#crack-time {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #ddd;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    #password {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 8px 15px;
+    }
+
+    .header-button {
+        font-size: 18px;
+        padding: 6px 12px;
+        left: 15px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    #criteria-feedback, #suggestions, #crack-time {
+        font-size: 12px;
+    }
+}

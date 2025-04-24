@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com;">
+    <title>Password Strength Checker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="header-button">.SHANMUKHA</a>
+            <a href="about.html" class="nav-link">About Me</a>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <h1>Password Strength Checker</h1>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
+            </div>
+            <div id="strength-meter">
+                <span id="strength-text">Strength: None</span>
+                <div id="strength-bar"></div>
+            </div>
+            <div id="criteria-feedback"></div>
+            <div id="suggestions"></div>
+            <div id="crack-time"></div>
+        </div>
+    </main>
+    <footer>
+        <p>Password Strength Checker is created by Shanmukha</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
