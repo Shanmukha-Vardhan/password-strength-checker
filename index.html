@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com;">
     <title>Password Strength Checker</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
     <header>
@@ -19,6 +20,7 @@
             <h1>Password Strength Checker</h1>
             <div class="input-group">
                 <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
+                <button id="toggle-password" type="button"><i class="fas fa-eye"></i></button>
             </div>
             <div id="strength-meter">
                 <span id="strength-text">Strength: None</span>

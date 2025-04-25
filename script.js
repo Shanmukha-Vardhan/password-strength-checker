@@ -5,8 +5,10 @@ const criteriaFeedback = document.getElementById('criteria-feedback');
 const suggestionsPanel = document.getElementById('suggestions-panel');
 const crackTime = document.getElementById('crack-time');
 const breachFeedback = document.getElementById('breach-feedback');
+const togglePassword = document.getElementById('toggle-password');
 
 passwordInput.addEventListener('input', analyzePassword);
+togglePassword.addEventListener('click', togglePasswordVisibility);
 
 async function analyzePassword() {
     const password = passwordInput.value;
@@ -27,6 +29,9 @@ async function analyzePassword() {
     if (hasDigit) strengthScore += 20;
     if (hasSpecial) strengthScore += 20;
     if (isLongEnough) strengthScore += 10;
+    if (hasLower && hasUpper && hasDigit && hasSpecial && isLongEnough) {
+        strengthScore += 10;
+    }
 
     // Update strength meter
     let strengthLabel = 'None';
@@ -56,16 +61,11 @@ async function analyzePassword() {
 
     // Suggestions for weak or medium passwords
     if (strengthScore < 80 && password.length > 0) {
-        if (!isLongEnough) {
-            suggestionsList.push(`Add ${8 - password.length} more character${8 - password.length === 1 ? '' : 's'} (currently ${password.length})`);
-        }
-        if (!hasLower) suggestionsList.push('Include at least one lowercase letter (e.g., a-z)');
-        if (!hasUpper) suggestionsList.push('Include at least one uppercase letter (e.g., A-Z)');
-        if (!hasDigit) suggestionsList.push('Include at least one number (e.g., 0-9)');
-        if (!hasSpecial) suggestionsList.push('Include at least one special character (e.g., !@#$%)');
-        if (password.length < 4) {
-            suggestionsList.push('Consider a longer password for better security');
-        }
+        if (!isLongEnough) suggestionsList.push('At least 8 characters');
+        if (!hasLower) suggestionsList.push('Lowercase letter');
+        if (!hasUpper) suggestionsList.push('Uppercase letter');
+        if (!hasDigit) suggestionsList.push('Digit');
+        if (!hasSpecial) suggestionsList.push('Special character');
     }
     suggestionsPanel.innerHTML = suggestionsList.length
         ? `<strong>Suggestions to improve your password:</strong><ul>${suggestionsList.map(s => `<li>${s}</li>`).join('')}</ul>`
@@ -113,15 +113,22 @@ async function analyzePassword() {
     breachFeedback.className = breachClass;
 }
 
+function togglePasswordVisibility() {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    const icon = togglePassword.querySelector('i');
+    icon.classList.toggle('fa-eye', isPassword);
+    icon.classList.toggle('fa-eye-slash', !isPassword);
+    console.log('Toggled to:', passwordInput.type, icon.className); // Debug
+}
+
 async function checkHIBP(password) {
-    // Convert password to SHA-1 hash
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-1', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
 
-    // Send first 5 chars of hash to HIBP
     const prefix = hash.slice(0, 5);
     const suffix = hash.slice(5);
     const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
@@ -130,7 +137,6 @@ async function checkHIBP(password) {
 
     if (!response.ok) throw new Error('API request failed');
 
-    // Parse response for matching suffix
     const text = await response.text();
     const lines = text.split('\n');
     for (const line of lines) {
@@ -150,7 +156,7 @@ function formatCrackTime(seconds) {
     const hours = minutes / 60;
     if (hours < 24) return `${Math.ceil(hours)} hour${hours >= 2 ? 's' : ''}`;
     const days = hours / 24;
- if (days < 365) return `${Math.ceil(days)} day${days >= 2 ? 's' : ''}`;
+    if (days < 365) return `${Math.ceil(days)} day${days >= 2 ? 's' : ''}`;
     const years = days / 365;
     return `${Math.ceil(years)} year${years >= 2 ? 's' : ''}`;
 }
