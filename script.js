@@ -4,10 +4,11 @@ const strengthBar = document.getElementById('strength-bar');
 const criteriaFeedback = document.getElementById('criteria-feedback');
 const suggestionsPanel = document.getElementById('suggestions-panel');
 const crackTime = document.getElementById('crack-time');
+const breachFeedback = document.getElementById('breach-feedback');
 
 passwordInput.addEventListener('input', analyzePassword);
 
-function analyzePassword() {
+async function analyzePassword() {
     const password = passwordInput.value;
     let strengthScore = 0;
     const suggestionsList = [];
@@ -55,16 +56,13 @@ function analyzePassword() {
 
     // Suggestions for weak or medium passwords
     if (strengthScore < 80 && password.length > 0) {
-        // Prioritize length first
         if (!isLongEnough) {
             suggestionsList.push(`Add ${8 - password.length} more character${8 - password.length === 1 ? '' : 's'} (currently ${password.length})`);
         }
-        // Then character variety
         if (!hasLower) suggestionsList.push('Include at least one lowercase letter (e.g., a-z)');
         if (!hasUpper) suggestionsList.push('Include at least one uppercase letter (e.g., A-Z)');
         if (!hasDigit) suggestionsList.push('Include at least one number (e.g., 0-9)');
         if (!hasSpecial) suggestionsList.push('Include at least one special character (e.g., !@#$%)');
-        // Additional tip for very weak passwords
         if (password.length < 4) {
             suggestionsList.push('Consider a longer password for better security');
         }
@@ -76,28 +74,72 @@ function analyzePassword() {
     // Time to crack estimator
     let crackTimeText = 'Instantly';
     if (password.length > 0) {
-        // Calculate character set size
         let charSetSize = 0;
         if (hasLower) charSetSize += 26;
         if (hasUpper) charSetSize += 26;
         if (hasDigit) charSetSize += 10;
         if (hasSpecial) charSetSize += 32;
 
-        // Dynamic scaling based on character types
         const charTypes = [hasLower, hasUpper, hasDigit, hasSpecial].filter(Boolean).length;
         const scalingFactor = charTypes <= 2 ? 3.5 : 1.5;
 
-        // Entropy: Length * log2(Character Set Size) / scalingFactor
         const entropy = (password.length * Math.log2(charSetSize || 1)) / scalingFactor;
-        
-        // Assume 100 million attempts per second
         const attemptsPerSecond = 100_000_000;
         const secondsToCrack = Math.pow(2, entropy) / attemptsPerSecond;
 
-        // Format time
         crackTimeText = formatCrackTime(secondsToCrack);
     }
     crackTime.textContent = `Time to crack: ${crackTimeText}`;
+
+    // HaveIBeenPwned check
+    let breachText = 'Checking for breaches...';
+    let breachClass = 'error';
+    if (password.length > 0) {
+        try {
+            const breachCount = await checkHIBP(password);
+            if (breachCount > 0) {
+                breachText = `Warning: This password has been seen in ${breachCount} breach${breachCount === 1 ? '' : 'es'}`;
+                breachClass = 'compromised';
+            } else {
+                breachText = 'Good news: No breaches found for this password';
+                breachClass = 'safe';
+            }
+        } catch (error) {
+            breachText = 'Unable to check breaches at this time';
+            breachClass = 'error';
+        }
+    }
+    breachFeedback.textContent = breachText;
+    breachFeedback.className = breachClass;
+}
+
+async function checkHIBP(password) {
+    // Convert password to SHA-1 hash
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+
+    // Send first 5 chars of hash to HIBP
+    const prefix = hash.slice(0, 5);
+    const suffix = hash.slice(5);
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+        headers: { 'Add-Padding': 'true' }
+    });
+
+    if (!response.ok) throw new Error('API request failed');
+
+    // Parse response for matching suffix
+    const text = await response.text();
+    const lines = text.split('\n');
+    for (const line of lines) {
+        const [hashSuffix, count] = line.split(':');
+        if (hashSuffix === suffix) {
+            return parseInt(count, 10);
+        }
+    }
+    return 0;
 }
 
 function formatCrackTime(seconds) {
@@ -108,7 +150,7 @@ function formatCrackTime(seconds) {
     const hours = minutes / 60;
     if (hours < 24) return `${Math.ceil(hours)} hour${hours >= 2 ? 's' : ''}`;
     const days = hours / 24;
-    if (days < 365) return `${Math.ceil(days)} day${days >= 2 ? 's' : ''}`;
+ if (days < 365) return `${Math.ceil(days)} day${days >= 2 ? 's' : ''}`;
     const years = days / 365;
     return `${Math.ceil(years)} year${years >= 2 ? 's' : ''}`;
 }

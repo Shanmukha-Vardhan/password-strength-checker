@@ -117,7 +117,7 @@ h1 {
     padding: 12px;
     border: 1px solid #b0e0e6;
     border-radius: 4px;
-    min-height: 50px; /* Ensure visibility even when empty */
+    min-height: 50px;
 }
 
 #suggestions-panel ul {
@@ -141,6 +141,30 @@ h1 {
     background-color: #f0fff0;
     border: 1px solid #90ee90;
     border-radius: 4px;
+}
+
+#breach-feedback {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+#breach-feedback.safe {
+    background-color: #f0fff0;
+    border: 1px solid #90ee90;
+}
+
+#breach-feedback.compromised {
+    background-color: #fff0f0;
+    border: 1px solid #ff6666;
+}
+
+#breach-feedback.error {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
 }
 
 footer {
@@ -178,11 +202,11 @@ footer {
         font-size: 14px;
     }
 
-    #criteria-feedback, #suggestions-panel, #crack-time {
+    #criteria-feedback, #suggestions-panel, #crack-time, #breach-feedback {
         font-size: 12px;
     }
 
-    #suggestions-panel, #crack-time {
+    #suggestions-panel, #crack-time, #breach-feedback {
         padding: 10px;
     }
 }
