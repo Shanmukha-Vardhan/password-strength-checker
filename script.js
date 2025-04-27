@@ -6,9 +6,31 @@ const suggestionsPanel = document.getElementById('suggestions-panel');
 const crackTime = document.getElementById('crack-time');
 const breachFeedback = document.getElementById('breach-feedback');
 const togglePassword = document.getElementById('toggle-password');
+const projectDetailsToggle = document.getElementById('project-details-toggle');
+const projectDetails = document.getElementById('project-details');
+const closeBtn = document.querySelector('.close-btn');
+const footer = document.getElementById('footer');
 
-passwordInput.addEventListener('input', analyzePassword);
-togglePassword.addEventListener('click', togglePasswordVisibility);
+// Load footer
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => footer.innerHTML = data)
+    .catch(error => console.error('Error loading footer:', error));
+
+// Page-specific logic
+if (passwordInput && togglePassword) {
+    passwordInput.addEventListener('input', analyzePassword);
+    togglePassword.addEventListener('click', togglePasswordVisibility);
+}
+
+if (projectDetailsToggle && projectDetails) {
+    projectDetailsToggle.addEventListener('click', toggleProjectDetails);
+    projectDetails.classList.add('hidden'); // Ensure hidden on load
+}
+
+if (closeBtn) {
+    closeBtn.addEventListener('click', toggleProjectDetails);
+}
 
 async function analyzePassword() {
     const password = passwordInput.value;
@@ -120,6 +142,10 @@ function togglePasswordVisibility() {
     icon.classList.toggle('fa-eye', isPassword);
     icon.classList.toggle('fa-eye-slash', !isPassword);
     console.log('Toggled to:', passwordInput.type, icon.className); // Debug
+}
+
+function toggleProjectDetails() {
+    projectDetails.style.display = projectDetails.style.display === 'none' ? 'block' : 'none';
 }
 
 async function checkHIBP(password) {

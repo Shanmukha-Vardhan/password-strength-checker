@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' https://*.linkedin.com https://*.instagram.com https://*.github.com;">
     <title>Password Strength Checker</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -12,9 +12,26 @@
     <header>
         <nav>
             <a href="index.html" class="header-button">.SHANMUKHA</a>
-            <a href="about.html" class="nav-link">About Me</a>
+            <div class="nav-right">
+                <a href="about.html" class="nav-link">About Me</a>
+                <button id="project-details-toggle" aria-label="Toggle project details">Details of This Project</button>
+            </div>
         </nav>
     </header>
+    <div id="project-details" class="project-details hidden">
+        <button class="close-btn" aria-label="Close project details"><i class="fas fa-times"></i></button>
+        <h2>PASSWORD STRENGTH CHECKER</h2>
+        <h3>A tool to secure your digital life.</h3>
+        <p>Analyze your password with real-time feedback. It checks for <strong>strength*</strong>, suggests improvements, estimates <strong>crack time*</strong>, and verifies against breaches using the HaveIBeenPwned API.</p>
+        <p class="footnote">*Strength is based on length, character variety, and complexity.</p>
+        <div class="download-buttons">
+            <a href="srs.pdf" download class="download-btn">Download SRS</a>
+            <a href="phases.pdf" download class="download-btn">Download Phases</a>
+        </div>
+        <div class="flashcard-footer">
+            <p>Created by Shanmukha | Developer</p>
+        </div>
+    </div>
     <main>
         <div class="container">
             <h1>Password Strength Checker</h1>
@@ -32,9 +49,7 @@
             <div id="breach-feedback"></div>
         </div>
     </main>
-    <footer>
-        <p>Password Strength Checker is created by Shanmukha</p>
-    </footer>
+    <footer id="footer"></footer>
     <script src="script.js"></script>
 </body>
 </html>

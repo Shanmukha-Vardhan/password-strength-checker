@@ -3,25 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com;">
-    <title>About Me - Password Strength Checker</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' https://*.linkedin.com https://*.instagram.com https://*.github.com;">
+    <title>About Shanmukha</title>
     <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
     <header>
         <nav>
             <a href="index.html" class="header-button">.SHANMUKHA</a>
-            <a href="about.html" class="nav-link">About Me</a>
+            <div class="nav-right">
+                <a href="about.html" class="nav-link">About Me</a>
+                <button id="project-details-toggle" aria-label="Toggle project details">Details of This Project</button>
+            </div>
         </nav>
     </header>
+    <div id="project-details" class="project-details hidden">
+        <button class="close-btn" aria-label="Close project details"><i class="fas fa-times"></i></button>
+        <h2>PASSWORD STRENGTH CHECKER</h2>
+        <h3>A tool to secure your digital life.</h3>
+        <p>Analyze your password with real-time feedback. It checks for <strong>strength*</strong>, suggests improvements, estimates <strong>crack time*</strong>, and verifies against breaches using the HaveIBeenPwned API.</p>
+        <p class="footnote">*Strength is based on length, character variety, and complexity.</p>
+        <div class="download-buttons">
+            <a href="srs.pdf" download class="download-btn">Download SRS</a>
+            <a href="phases.pdf" download class="download-btn">Download Phases</a>
+        </div>
+        <div class="flashcard-footer">
+            <p>Created by Shanmukha | Developer</p>
+        </div>
+    </div>
     <main>
-        <div class="about-container">
+        <div class="container">
             <h1>About Me</h1>
-            <p>Hi, I'm Shanmukha, a passionate developer interested in building secure and user-friendly web applications. This Password Strength Checker is a project designed to help users create stronger passwords by providing real-time feedback and criteria analysis. I enjoy learning about web development, security, and creating tools that make the internet a safer place.</p>
+            <p>Welcome! I’m Shanmukha — a passionate web developer with a focus on creating clean, functional, and secure digital experiences.</p>
+            <p>This Password Strength Checker project reflects my commitment to combining strong security principles with intuitive, user-friendly design.</p>
+            <p>I believe that great technology should be both powerful and accessible, empowering users without overwhelming them.</p>
+            <p>Every project I build is an opportunity to learn, innovate, and push the boundaries of what’s possible.</p>
+            <p>Thank you for visiting — your security matters, and I’m here to make it stronger.</p>
         </div>
     </main>
-    <footer>
-        <p>Password Strength Checker is created by Shanmukha</p>
-    </footer>
+    <footer id="footer"></footer>
+    <script src="script.js"></script>
 </body>
 </html>
+
