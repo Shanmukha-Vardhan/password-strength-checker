@@ -1,188 +1,216 @@
-const passwordInput = document.getElementById('password');
-const strengthText = document.getElementById('strength-text');
-const strengthBar = document.getElementById('strength-bar');
-const criteriaFeedback = document.getElementById('criteria-feedback');
-const suggestionsPanel = document.getElementById('suggestions-panel');
-const crackTime = document.getElementById('crack-time');
-const breachFeedback = document.getElementById('breach-feedback');
-const togglePassword = document.getElementById('toggle-password');
-const projectDetailsToggle = document.getElementById('project-details-toggle');
-const projectDetails = document.getElementById('project-details');
-const closeBtn = document.querySelector('.close-btn');
-const footer = document.getElementById('footer');
+// Grabbing all the DOM elements I need for the password checker
+const pwdInput = document.getElementById('password'); // Main input field
+const strengthMsg = document.getElementById('strength-text');
+const strengthBarThing = document.getElementById('strength-bar');
+  const criteriaBox = document.getElementById('criteria-feedback');
+const suggestionArea = document.getElementById('suggestions-panel'); // Where I show tips
+const crackTimeDisplay = document.getElementById('crack-time');
+const breachStatus = document.getElementById('breach-feedback');
+const toggleEyeBtn = document.getElementById('toggle-password');
+const projInfoToggle = document.getElementById('project-details-toggle');
+  const projInfoPanel = document.getElementById('project-details');
+const closeButton = document.querySelector('.close-btn');
+const footerSection = document.getElementById('footer');
 
-// Load footer
+// TODO: Maybe add a custom footer with my GitHub link later
+// Loading footer from external file
 fetch('footer.html')
-    .then(response => response.text())
-    .then(data => footer.innerHTML = data)
-    .catch(error => console.error('Error loading footer:', error));
+.then(resp => resp.text())
+.then(data => {
+    footerSection.innerHTML = data;
+    console.log("Footer loaded, looks good!"); // Debug to confirm it worked
+})
+.catch(err => {
+    console.error('Footer load failed, ugh:', err);
+});
 
-// Page-specific logic
-if (passwordInput && togglePassword) {
-    passwordInput.addEventListener('input', analyzePassword);
-    togglePassword.addEventListener('click', togglePasswordVisibility);
+// Wiring up the page stuff
+if (pwdInput && toggleEyeBtn) {
+  pwdInput.addEventListener('input', checkMyPassword); // Run analysis on input
+    toggleEyeBtn.addEventListener('click', flipPasswordView);
 }
 
-if (projectDetailsToggle && projectDetails) {
-    projectDetailsToggle.addEventListener('click', toggleProjectDetails);
-    projectDetails.classList.add('hidden'); // Ensure hidden on load
+if(projInfoToggle && projInfoPanel){
+    projInfoToggle.addEventListener('click', showHideProjectInfo);
+    projInfoPanel.classList.add('hidden'); // Hide it by default
 }
 
-if (closeBtn) {
-    closeBtn.addEventListener('click', toggleProjectDetails);
+  if (closeButton) {
+ closeButton.addEventListener('click', showHideProjectInfo);
 }
 
-async function analyzePassword() {
-    const password = passwordInput.value;
-    let strengthScore = 0;
-    const suggestionsList = [];
+// Main function to analyze the password
+async function checkMyPassword() {
+    const userPassword = pwdInput.value; // Grab what they typed
+    let pwdScore = 0; // Track how good the password is
+    const tipsForBetterPwd = [];
 
-    // Criteria checks
-    const hasLower = /[a-z]/.test(password);
-    const hasUpper = /[A-Z]/.test(password);
-    const hasDigit = /\d/.test(password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    const isLongEnough = password.length >= 8;
+    // Checking password criteria
+    const gotLowercase = /[a-z]/.test(userPassword);
+      const gotUppercase = /[A-Z]/.test(userPassword);
+    const gotNumber = /\d/.test(userPassword);
+    const gotSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(userPassword);
+    const longEnough = userPassword.length >= 8;
 
-    // Strength calculation
-    if (password.length > 0) strengthScore += 10;
-    if (hasLower) strengthScore += 20;
-    if (hasUpper) strengthScore += 20;
-    if (hasDigit) strengthScore += 20;
-    if (hasSpecial) strengthScore += 20;
-    if (isLongEnough) strengthScore += 10;
-    if (hasLower && hasUpper && hasDigit && hasSpecial && isLongEnough) {
-        strengthScore += 10;
+    // Scoring logic (kinda arbitrary but works)
+    if (userPassword.length > 0) pwdScore += 10; // At least they typed something
+    if (gotLowercase) pwdScore += 20;
+    if (gotUppercase) pwdScore += 20;
+      if (gotNumber) pwdScore += 20;
+    if (gotSpecialChar) pwdScore += 20;
+    if (longEnough) pwdScore += 10;
+    if (gotLowercase && gotUppercase && gotNumber && gotSpecialChar && longEnough) {
+        pwdScore += 10; // Bonus for hitting all criteria
     }
 
-    // Update strength meter
-    let strengthLabel = 'None';
-    let barClass = '';
-    if (strengthScore >= 80) {
-        strengthLabel = 'Strong';
-        barClass = 'strong';
-    } else if (strengthScore >= 50) {
-        strengthLabel = 'Medium';
-        barClass = 'medium';
-    } else if (strengthScore > 0) {
-        strengthLabel = 'Weak';
-        barClass = 'weak';
+    console.log(`Password score: ${pwdScore}`); // Debug to see the score
+
+    // Update the strength meter UI
+    let strengthLevel = 'None';
+    let barStyle = '';
+    if (pwdScore >= 80) {
+        strengthLevel = 'Strong';
+        barStyle = 'strong';
+    } else if (pwdScore >= 50) {
+        strengthLevel = 'Medium';
+          barStyle = 'medium';
+    } else if (pwdScore > 0) {
+        strengthLevel = 'Weak';
+        barStyle = 'weak';
     }
 
-    strengthText.textContent = `Strength: ${strengthLabel}`;
-    strengthBar.className = barClass;
+    strengthMsg.textContent = `How's it looking: ${strengthLevel}`;
+      strengthBarThing.className = barStyle;
 
-    // Criteria feedback
-    criteriaFeedback.innerHTML = `
-        ${isLongEnough ? '✓' : '✗'} At least 8 characters<br>
-        ${hasLower ? '✓' : '✗'} Lowercase letter<br>
-        ${hasUpper ? '✓' : '✗'} Uppercase letter<br>
-        ${hasDigit ? '✓' : '✗'} Digit<br>
-        ${hasSpecial ? '✓' : '✗'} Special character
+    // Show which criteria they hit or missed
+    criteriaBox.innerHTML = `
+        ${longEnough ? '✓' : '✗'} 8+ chars<br>
+        ${gotLowercase ? '✓' : '✗'} Lowercase<br>
+          ${gotUppercase ? '✓' : '✗'} Uppercase<br>
+        ${gotNumber ? '✓' : '✗'} Number<br>
+        ${gotSpecialChar ? '✓' : '✗'} Special char
     `;
 
-    // Suggestions for weak or medium passwords
-    if (strengthScore < 80 && password.length > 0) {
-        if (!isLongEnough) suggestionsList.push('At least 8 characters');
-        if (!hasLower) suggestionsList.push('Lowercase letter');
-        if (!hasUpper) suggestionsList.push('Uppercase letter');
-        if (!hasDigit) suggestionsList.push('Digit');
-        if (!hasSpecial) suggestionsList.push('Special character');
+    // Give tips if password isn't great
+    if (pwdScore < 80 && userPassword.length > 0) {
+      if (!longEnough) tipsForBetterPwd.push('Make it 8+ chars');
+      if (!gotLowercase) tipsForBetterPwd.push('Add a lowercase letter');
+        if (!gotUppercase) tipsForBetterPwd.push('Throw in an uppercase');
+      if (!gotNumber) tipsForBetterPwd.push('Needs a number');
+      if (!gotSpecialChar) tipsForBetterPwd.push('Add a special char like ! or @');
     }
-    suggestionsPanel.innerHTML = suggestionsList.length
-        ? `<strong>Suggestions to improve your password:</strong><ul>${suggestionsList.map(s => `<li>${s}</li>`).join('')}</ul>`
-        : 'Your password is strong! No suggestions needed.';
+    suggestionArea.innerHTML = tipsForBetterPwd.length
+        ? `<b>Tips to level up your password:</b><ul>${tipsForBetterPwd.map(tip => `<li>${tip}</li>`).join('')}</ul>`
+        : 'Yo, your password is solid! No tips needed.';
 
-    // Time to crack estimator
-    let crackTimeText = 'Instantly';
-    if (password.length > 0) {
-        let charSetSize = 0;
-        if (hasLower) charSetSize += 26;
-        if (hasUpper) charSetSize += 26;
-        if (hasDigit) charSetSize += 10;
-        if (hasSpecial) charSetSize += 32;
+    // Estimate how long it'd take to crack
+    let crackTimeTxt = 'Instant';
+    if (userPassword.length > 0) {
+        let charPool = 0;
+        if (gotLowercase) charPool += 26;
+          if (gotUppercase) charPool += 26;
+        if (gotNumber) charPool += 10;
+        if (gotSpecialChar) charPool += 32;
 
-        const charTypes = [hasLower, hasUpper, hasDigit, hasSpecial].filter(Boolean).length;
-        const scalingFactor = charTypes <= 2 ? 3.5 : 1.5;
+        const charVariety = [gotLowercase, gotUppercase, gotNumber, gotSpecialChar].filter(Boolean).length;
+        const tweakFactor = charVariety <= 2 ? 3.5 : 1.5;
 
-        const entropy = (password.length * Math.log2(charSetSize || 1)) / scalingFactor;
-        const attemptsPerSecond = 100_000_000;
-        const secondsToCrack = Math.pow(2, entropy) / attemptsPerSecond;
+        const entropyVal = (userPassword.length * Math.log2(charPool || 1)) / tweakFactor;
+        const guessesPerSec = 100_000_000;
+        const secsToCrack = Math.pow(2, entropyVal) / guessesPerSec;
 
-        crackTimeText = formatCrackTime(secondsToCrack);
+        crackTimeTxt = makeCrackTimePretty(secsToCrack);
     }
-    crackTime.textContent = `Time to crack: ${crackTimeText}`;
+    crackTimeDisplay.textContent = `Crack time: ${crackTimeTxt}`;
+    console.log(`Estimated crack time: ${crackTimeTxt}`); // Debug
 
-    // HaveIBeenPwned check
-    let breachText = 'Checking for breaches...';
-    let breachClass = 'error';
-    if (password.length > 0) {
+    // Check if password's been pwned
+    // Using SHA-1 to check password safety via HIBP API
+    let breachMsg = 'Checking for leaks...';
+    let breachStyle = 'error';
+    if (userPassword.length > 0) {
         try {
-            const breachCount = await checkHIBP(password);
-            if (breachCount > 0) {
-                breachText = `Warning: This password has been seen in ${breachCount} breach${breachCount === 1 ? '' : 'es'}`;
-                breachClass = 'compromised';
+            const breachHits = await raviVarmaHIBPCheck(userPassword); // Named after my crime story char!
+            if (breachHits > 0) {
+                breachMsg = `Yikes, this password was in ${breachHits} leak${breachHits === 1 ? '' : 's'}`;
+                breachStyle = 'compromised';
             } else {
-                breachText = 'Good news: No breaches found for this password';
-                breachClass = 'safe';
+                breachMsg = 'Sweet, no leaks found!';
+                  breachStyle = 'safe';
             }
-        } catch (error) {
-            breachText = 'Unable to check breaches at this time';
-            breachClass = 'error';
+        } catch (oops) {
+            breachMsg = 'Couldn’t check leaks, something broke';
+            breachStyle = 'error';
+            console.error('HIBP check failed:', oops); // Error tracing
         }
     }
-    breachFeedback.textContent = breachText;
-    breachFeedback.className = breachClass;
+    breachStatus.textContent = breachMsg;
+    breachStatus.className = breachStyle;
 }
 
-function togglePasswordVisibility() {
-    const isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-    const icon = togglePassword.querySelector('i');
-    icon.classList.toggle('fa-eye', isPassword);
-    icon.classList.toggle('fa-eye-slash', !isPassword);
-    console.log('Toggled to:', passwordInput.type, icon.className); // Debug
+// Toggle password visibility
+function flipPasswordView() {
+    const isHidden = pwdInput.type === 'password';
+    pwdInput.type = isHidden ? 'text' : 'password';
+    const eyeIcon = toggleEyeBtn.querySelector('i');
+    eyeIcon.classList.toggle('fa-eye', isHidden);
+      eyeIcon.classList.toggle('fa-eye-slash', !isHidden);
+    console.log('Toggled to:', pwdInput.type, eyeIcon.className); // Keeping your debug
 }
 
-function toggleProjectDetails() {
-    projectDetails.style.display = projectDetails.style.display === 'none' ? 'block' : 'none';
+// Show/hide project details panel
+function showHideProjectInfo() {
+    projInfoPanel.style.display = projInfoPanel.style.display === 'none' ? 'block' : 'none';
+    console.log('Project info toggled:', projInfoPanel.style.display); // Debug
 }
 
-async function checkHIBP(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+// Check HaveIBeenPwned for breaches
+async function raviVarmaHIBPCheck(pwd) {
+    // Using SHA-1 to hash the password for HIBP
+    const textEncoder = new TextEncoder();
+    const pwdData = textEncoder.encode(pwd);
+      const hashBuf = await crypto.subtle.digest('SHA-1', pwdData);
+    const hashBytes = Array.from(new Uint8Array(hashBuf));
+    const fullHash = hashBytes.map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
 
-    const prefix = hash.slice(0, 5);
-    const suffix = hash.slice(5);
-    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
-        headers: { 'Add-Padding': 'true' }
-    });
+    const hashPrefix = fullHash.slice(0, 5);
+    const hashTail = fullHash.slice(5);
+    try {
+        const resp = await fetch(`https://api.pwnedpasswords.com/range/${hashPrefix}`, {
+            headers: { 'Add-Padding': 'true' }
+        });
 
-    if (!response.ok) throw new Error('API request failed');
+        if (!resp.ok) throw new Error('HIBP API call failed');
 
-    const text = await response.text();
-    const lines = text.split('\n');
-    for (const line of lines) {
-        const [hashSuffix, count] = line.split(':');
-        if (hashSuffix === suffix) {
-            return parseInt(count, 10);
+        const apiText = await resp.text();
+        const lines = apiText.split('\n');
+        for (const line of lines) {
+            const [suffix, count] = line.split(':');
+            if (suffix === hashTail) {
+                console.log(`Found breach, count: ${count}`); // Debug
+                return parseInt(count, 10);
+            }
         }
+        return 0;
+    } catch (err) {
+        console.error('Error in HIBP check:', err); // Error tracing
+        throw err;
     }
-    return 0;
 }
 
-function formatCrackTime(seconds) {
-    if (seconds < 1) return 'Instantly';
-    if (seconds < 60) return `${Math.ceil(seconds)} second${seconds >= 2 ? 's' : ''}`;
-    const minutes = seconds / 60;
-    if (minutes < 60) return `${Math.ceil(minutes)} minute${minutes >= 2 ? 's' : ''}`;
-    const hours = minutes / 60;
-    if (hours < 24) return `${Math.ceil(hours)} hour${hours >= 2 ? 's' : ''}`;
-    const days = hours / 24;
+// Format crack time to look nice
+function makeCrackTimePretty(secs) {
+    if (secs < 1) return 'Instant';
+    if (secs < 60) return `${Math.ceil(secs)} sec${secs >= 2 ? 's' : ''}`;
+      const mins = secs / 60;
+    if (mins < 60) return `${Math.ceil(mins)} min${mins >= 2 ? 's' : ''}`;
+    const hrs = mins / 60;
+    if (hrs < 24) return `${Math.ceil(hrs)} hr${hrs >= 2 ? 's' : ''}`;
+    const days = hrs / 24;
     if (days < 365) return `${Math.ceil(days)} day${days >= 2 ? 's' : ''}`;
-    const years = days / 365;
-    return `${Math.ceil(years)} year${years >= 2 ? 's' : ''}`;
+    const yrs = days / 365;
+    return `${Math.ceil(yrs)} yr${yrs >= 2 ? 's' : ''}`;
 }
+
+// Personal note: This took way longer than expected, but it’s solid for my portfolio!
+// TODO: Add dark mode toggle and password creator module before July 1st deadline
