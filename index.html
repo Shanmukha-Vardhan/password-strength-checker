@@ -1,58 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' https://*.linkedin.com https://*.instagram.com https://*.github.com;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' https://*.linkedin.com https://*.instagram.com https://*.github.com;">
     <title>Password Strength Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body>
+    <div class="background-glow"></div>
     <header>
         <nav>
-            <a href="index.html" class="header-button">.SHANMUKHA</a>
+            <a href="index.html" class="header-logo">.SHANMUKHA</a>
             <div class="nav-right">
-                <a href="https://portfolio-f8hp-shanmukha-vardhans-projects.vercel.app/index.html" class="nav-link">About Me</a>
-                <button id="project-details-toggle" aria-label="Toggle project details">Details of This Project</button>
+                <a href="https://portfolio-f8hp-shanmukha-vardhans-projects.vercel.app/index.html"
+                    class="nav-link">About Me</a>
+                <button id="project-details-toggle" aria-label="Toggle project details" class="nav-btn">Project
+                    Insight</button>
             </div>
         </nav>
     </header>
-    <div id="project-details" class="project-details hidden">
+
+    <div id="project-details" class="project-details hidden glass-panel">
         <button class="close-btn" aria-label="Close project details"><i class="fas fa-times"></i></button>
-        <h2>PASSWORD STRENGTH CHECKER</h2>
-        <h3>Secure Your Digital Life, One Password at a Time.</h3>
-        <p>Test and strengthen your passwords with instant, real-time feedback.</p>
-        <p>This tool analyzes password <strong>strength*</strong>, estimates <strong>crack time*</strong>, suggests improvements, and checks for known breaches using the <strong>HaveIBeenPwned API.</strong></p>
-        <p class="footnote">Strength evaluation considers password length, character variety, and overall complexity.</p>
-        <div class="download-buttons">
-            <a href="assets/Password strength checker.SRS.pdf" download class="download-btn">Download <strong>SRS</strong></a>
-            <a href="assets/Password Strength Checker-Test report.pdf" download class="download-btn">Download <strong>Test report</strong></a>
+        <div class="details-content">
+            <h2>Security protocol</h2>
+            <h3>Password Strength Analysis Tool</h3>
+            <p>Evaluate your digital keys with real-time feedback algorithms.</p>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Strength Analysis</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Crack Time Est.</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-user-secret"></i>
+                    <span>Breach Check</span>
+                </div>
+            </div>
+            <p class="footnote">Analysis performed locally. HIBP check uses k-Anonymity.</p>
+            <div class="download-buttons">
+                <a href="assets/Password strength checker.SRS.pdf" download class="download-btn">
+                    <i class="fas fa-file-pdf"></i> SRS
+                </a>
+                <a href="assets/Password Strength Checker-Test report.pdf" download class="download-btn">
+                    <i class="fas fa-clipboard-check"></i> Report
+                </a>
+            </div>
         </div>
         <div class="flashcard-footer">
-            <p>Created by Shanmukha | Developer</p>
+            <p>System Architect: Shanmukha</p>
         </div>
     </div>
+
     <main>
-        <div class="container">
-            <h1>Password Strength Checker</h1>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
-                <button id="toggle-password" type="button"><i class="fas fa-eye"></i></button>
+        <div class="container glass-panel">
+            <div class="header-section">
+                <div class="icon-wrapper">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h1>Password Fortress</h1>
+                <p class="subtitle">Enter your password to analyze its resistance.</p>
             </div>
+
+            <div class="input-wrapper">
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Type a password..." autocomplete="off">
+                    <button id="toggle-password" type="button" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="focus-border"></div>
+            </div>
+
             <div id="strength-meter">
-                <span id="strength-text">Strength: None</span>
-                <div id="strength-bar"></div>
+                <div class="strength-header">
+                    <span class="label">Resilience:</span>
+                    <span id="strength-text" class="value">Waiting...</span>
+                </div>
+                <div class="bar-container">
+                    <div id="strength-bar"></div>
+                    <div class="bar-bg"></div>
+                </div>
             </div>
-            <div id="criteria-feedback"></div>
+
+            <div class="feedback-grid">
+                <div id="criteria-feedback" class="criteria-grid"></div>
+                <div id="crack-time" class="info-card"></div>
+                <div id="breach-feedback" class="info-card"></div>
+            </div>
+
             <div id="suggestions-panel"></div>
-            <div id="crack-time"></div>
-            <div id="breach-feedback"></div>
         </div>
     </main>
+
     <footer id="footer"></footer>
     <script src="script.js"></script>
 </body>
+
 </html>

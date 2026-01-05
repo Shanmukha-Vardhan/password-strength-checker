@@ -66,45 +66,58 @@ async function checkMyPassword() {
     console.log(`Password score: ${pwdScore}`); // Debug to see the score
 
     // Update the strength meter UI
+
+    // Update the strength meter UI
     let strengthLevel = 'None';
-    let barStyle = '';
+    let barClass = '';
+    
     if (pwdScore >= 80) {
-        strengthLevel = 'Strong';
-        barStyle = 'strong';
+        strengthLevel = 'Fortress Level';
+        barClass = 'strong';
     } else if (pwdScore >= 50) {
-        strengthLevel = 'Medium';
-          barStyle = 'medium';
+        strengthLevel = 'Moderate';
+        barClass = 'medium';
     } else if (pwdScore > 0) {
         strengthLevel = 'Weak';
-        barStyle = 'weak';
+        barClass = 'weak';
     }
 
-    strengthMsg.textContent = `How's it looking: ${strengthLevel}`;
-      strengthBarThing.className = barStyle;
+    strengthMsg.textContent = strengthLevel;
+    // reset classes first
+    strengthBarThing.className = '';
+    if (barClass) strengthBarThing.classList.add(barClass);
+    strengthBarThing.style.width = userPassword.length > 0 ? `${Math.min(pwdScore, 100)}%` : '0%';
 
-    // Show which criteria they hit or missed
-    criteriaBox.innerHTML = `
-        ${longEnough ? '✓' : '✗'} 8+ chars<br>
-        ${gotLowercase ? '✓' : '✗'} Lowercase<br>
-          ${gotUppercase ? '✓' : '✗'} Uppercase<br>
-        ${gotNumber ? '✓' : '✗'} Number<br>
-        ${gotSpecialChar ? '✓' : '✗'} Special char
-    `;
+    // Rich Criteria Feedback
+    const criteriaList = [
+        { label: '8+ Characters', met: longEnough },
+        { label: 'Lowercase Letter', met: gotLowercase },
+        { label: 'Uppercase Letter', met: gotUppercase },
+        { label: 'Number', met: gotNumber },
+        { label: 'Special Character', met: gotSpecialChar }
+    ];
+
+    criteriaBox.innerHTML = criteriaList.map(c => `
+        <div class="criteria-item ${c.met ? 'valid' : ''}">
+            <i class="fas ${c.met ? 'fa-check' : 'fa-circle'}"></i>
+            <span>${c.label}</span>
+        </div>
+    `).join('');
 
     // Give tips if password isn't great
     if (pwdScore < 80 && userPassword.length > 0) {
-      if (!longEnough) tipsForBetterPwd.push('Make it 8+ chars');
+      if (!longEnough) tipsForBetterPwd.push('Increase length to at least 8 characters');
       if (!gotLowercase) tipsForBetterPwd.push('Add a lowercase letter');
-        if (!gotUppercase) tipsForBetterPwd.push('Throw in an uppercase');
-      if (!gotNumber) tipsForBetterPwd.push('Needs a number');
-      if (!gotSpecialChar) tipsForBetterPwd.push('Add a special char like ! or @');
+        if (!gotUppercase) tipsForBetterPwd.push('Include an uppercase letter');
+      if (!gotNumber) tipsForBetterPwd.push('Incorporate a number');
+      if (!gotSpecialChar) tipsForBetterPwd.push('Add a special symbol (!@#$)');
     }
     suggestionArea.innerHTML = tipsForBetterPwd.length
-        ? `<b>Tips to level up your password:</b><ul>${tipsForBetterPwd.map(tip => `<li>${tip}</li>`).join('')}</ul>`
-        : 'Yo, your password is solid! No tips needed.';
+        ? `<b>Optimization Tips:</b><ul>${tipsForBetterPwd.map(tip => `<li>${tip}</li>`).join('')}</ul>`
+        : '';
 
     // Estimate how long it'd take to crack
-    let crackTimeTxt = 'Instant';
+    let crackTimeTxt = 'Pending...';
     if (userPassword.length > 0) {
         let charPool = 0;
         if (gotLowercase) charPool += 26;
@@ -121,31 +134,34 @@ async function checkMyPassword() {
 
         crackTimeTxt = makeCrackTimePretty(secsToCrack);
     }
-    crackTimeDisplay.textContent = `Crack time: ${crackTimeTxt}`;
-    console.log(`Estimated crack time: ${crackTimeTxt}`); // Debug
+    crackTimeDisplay.innerHTML = userPassword.length > 0 
+        ? `<i class="fas fa-stopwatch"></i> Crack Time: <strong>${crackTimeTxt}</strong>`
+        : '';
 
     // Check if password's been pwned
     // Using SHA-1 to check password safety via HIBP API
-    let breachMsg = 'Checking for leaks...';
-    let breachStyle = 'error';
     if (userPassword.length > 0) {
+        breachStatus.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Checking breach database...';
+        breachStatus.className = 'info-card'; // reset
+        
         try {
-            const breachHits = await raviVarmaHIBPCheck(userPassword); // Named after my crime story char!
+            const breachHits = await raviVarmaHIBPCheck(userPassword);
             if (breachHits > 0) {
-                breachMsg = `Yikes, this password was in ${breachHits} leak${breachHits === 1 ? '' : 's'}`;
-                breachStyle = 'compromised';
+                breachStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Exposed in <strong>${breachHits.toLocaleString()}</strong> data breaches`;
+                breachStatus.className = 'info-card compromised';
             } else {
-                breachMsg = 'Sweet, no leaks found!';
-                  breachStyle = 'safe';
+                breachStatus.innerHTML = '<i class="fas fa-shield-alt"></i> No breaches found in public database';
+                  breachStatus.className = 'info-card safe';
             }
         } catch (oops) {
-            breachMsg = 'Couldn’t check leaks, something broke';
-            breachStyle = 'error';
-            console.error('HIBP check failed:', oops); // Error tracing
+            breachStatus.textContent = 'Breach check service unavailable';
+            breachStatus.className = 'info-card error';
+            console.error('HIBP check failed:', oops);
         }
+    } else {
+        breachStatus.textContent = '';
+        breachStatus.className = 'info-card';
     }
-    breachStatus.textContent = breachMsg;
-    breachStatus.className = breachStyle;
 }
 
 // Toggle password visibility
