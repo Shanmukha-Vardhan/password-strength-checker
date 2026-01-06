@@ -32,7 +32,8 @@
         <h3>Password Strength Estimator</h3>
         <p>A client-side security tool that evaluates password resilience against brute-force attacks.</p>
         <p>This tool analyzes <strong>entropy</strong>, estimates <strong>crack time</strong>, and cross-references the
-            <strong>HaveIBeenPwned</strong> breach database.</p>
+            <strong>HaveIBeenPwned</strong> breach database.
+        </p>
         <div class="download-buttons">
             <a href="assets/Password strength checker.SRS.pdf" download class="download-btn">
                 <i class="fas fa-file-pdf"></i> Download SRS
@@ -48,42 +49,165 @@
 
     <main>
         <div class="container">
-            <div class="header-section">
-                <div class="icon-wrapper">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h1>Security Check</h1>
-                <p class="subtitle">Analyze password strength & breach history.</p>
+            <!-- Theme & Settings Controls -->
+            <div class="top-controls">
+                <select id="theme-selector" class="theme-select" aria-label="Select Theme">
+                    <option value="light">✨ Clean Light</option>
+                    <option value="paranoid">👁️ Paranoid</option>
+                    <option value="corporate">🏢 Corporate</option>
+                    <option value="hacker">💻 Matrix</option>
+                </select>
+                <button id="achievements-btn" class="icon-btn" title="Achievements">
+                    <i class="fas fa-trophy"></i>
+                </button>
             </div>
 
-            <div class="input-wrapper">
-                <div class="input-group">
-                    <input type="password" id="password" placeholder="Enter password to analyze..." autocomplete="off">
-                    <button id="toggle-password" type="button" aria-label="Toggle password visibility">
-                        <i class="fas fa-eye"></i>
-                    </button>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="analyze">Analyze</button>
+                <button class="tab-btn" data-tab="generate">Generate</button>
+                <button class="tab-btn" data-tab="history">History</button>
+            </div>
+
+            <!-- TAB: ANALYZER -->
+            <div id="tab-analyze" class="tab-content active">
+                <div class="header-section">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h1>Security Check</h1>
+                    <p class="subtitle">Analyze password strength & breach history.</p>
+                </div>
+
+                <div class="input-wrapper">
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Enter password to analyze..."
+                            autocomplete="off">
+                        <button id="toggle-password" type="button" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Entropy Visualizer -->
+                <div id="entropy-container" class="entropy-hidden">
+                    <div class="entropy-label">Entropy: <span id="entropy-bits">0</span> bits</div>
+                    <div class="entropy-bar-wrapper">
+                        <div id="entropy-bar"></div>
+                    </div>
+                    <small id="entropy-msg">Enter a password to see entropy.</small>
+                </div>
+
+                <div id="strength-meter">
+                    <div class="strength-header">
+                        <span class="label">Strength</span>
+                        <span id="strength-text">Empty</span>
+                    </div>
+                    <div class="bar-container">
+                        <div id="strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="feedback-grid">
+                    <div id="criteria-feedback"></div>
+
+                    <!-- Pattern Detection Warning -->
+                    <div id="pattern-feedback" class="info-card hidden"></div>
+
+                    <!-- Attack Timeline -->
+                    <div id="crack-timeline" class="info-card">
+                        <div class="timeline-header"><i class="fas fa-clock"></i> Time to Crack</div>
+                        <div class="timeline-item">
+                            <span>💻 PC</span>
+                            <span id="time-pc">-</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span>🚀 Supercomputer</span>
+                            <span id="time-super">-</span>
+                        </div>
+                    </div>
+
+                    <div id="breach-feedback" class="info-card"></div>
+                </div>
+
+                <!-- Password Age -->
+                <div class="age-section">
+                    <div class="age-header"
+                        onclick="document.getElementById('age-input-wrapper').classList.toggle('hidden')">
+                        <span><i class="fas fa-calendar-alt"></i> Password Age Check</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div id="age-input-wrapper" class="hidden mt-2">
+                        <label for="creation-date">When did you create this?</label>
+                        <input type="date" id="creation-date">
+                        <div id="rotation-msg"></div>
+                    </div>
+                </div>
+
+                <div id="suggestions-panel"></div>
+
+                <button id="download-report" class="action-btn secondary hidden">
+                    <i class="fas fa-file-pdf"></i> Download Security Report
+                </button>
+            </div>
+
+            <!-- TAB: GENERATOR -->
+            <div id="tab-generate" class="tab-content">
+                <div class="header-section">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h1>Generator</h1>
+                    <p class="subtitle">Create an uncrackable fortress.</p>
+                </div>
+
+                <div class="gen-output-group">
+                    <input type="text" id="generated-password" readonly placeholder="Your new key...">
+                    <button id="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
+                    <button id="refresh-gen-btn" title="Regenerate"><i class="fas fa-sync-alt"></i></button>
+                </div>
+
+                <div class="gen-options">
+                    <div class="slider-container">
+                        <label>Length: <span id="gen-length-val">16</span></label>
+                        <input type="range" id="gen-length" min="8" max="64" value="16">
+                    </div>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" id="gen-uppercase" checked> A-Z</label>
+                        <label><input type="checkbox" id="gen-lowercase" checked> a-z</label>
+                        <label><input type="checkbox" id="gen-numbers" checked> 0-9</label>
+                        <label><input type="checkbox" id="gen-symbols" checked> !@#</label>
+                        <label><input type="checkbox" id="gen-memorable"> Memorable</label>
+                    </div>
                 </div>
             </div>
 
-            <div id="strength-meter">
-                <div class="strength-header">
-                    <span class="label">Strength</span>
-                    <span id="strength-text">Empty</span>
+            <!-- TAB: HISTORY & GAMIFICATION -->
+            <div id="tab-history" class="tab-content">
+                <div class="header-section">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h1>Vault History</h1>
                 </div>
-                <div class="bar-container">
-                    <div id="strength-bar"></div>
+
+                <div class="achievements-section">
+                    <h3>Achievements</h3>
+                    <div id="badges-grid" class="badges-grid">
+                        <!-- Badges injected by JS -->
+                    </div>
+                </div>
+
+                <div class="history-list">
+                    <h3>Recent Checks</h3>
+                    <ul id="history-items"></ul>
+                    <button id="clear-history">Clear History</button>
                 </div>
             </div>
 
-            <div class="feedback-grid">
-                <div id="criteria-feedback"></div>
-                <div id="crack-time" class="info-card"></div>
-                <div id="breach-feedback" class="info-card"></div>
-            </div>
-
-            <div id="suggestions-panel"></div>
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <footer id="footer"></footer>
     <script src="script.js"></script>
