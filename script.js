@@ -557,3 +557,38 @@ function resetUI() {
     breachStatus.textContent = '';
     entropyContainer.classList.add('entropy-hidden');
 }
+
+// --- QR Code Logic ---
+const btnQr = document.getElementById('qr-btn');
+const modalQr = document.getElementById('qr-modal');
+const closeQr = document.querySelector('.close-modal-qr');
+const qrContainer = document.getElementById('qrcode');
+
+if (btnQr) {
+    btnQr.addEventListener('click', () => {
+        const password = genOutput.value;
+        if (!password) {
+            alert('Generate a password first!');
+            return;
+        }
+
+        modalQr.classList.remove('hidden');
+        qrContainer.innerHTML = ''; // Clear previous
+
+        // Generate new QR
+        new QRCode(qrContainer, {
+            text: password,
+            width: 180,
+            height: 180,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    });
+}
+
+if (closeQr) {
+    closeQr.addEventListener('click', () => {
+        modalQr.classList.add('hidden');
+    });
+}

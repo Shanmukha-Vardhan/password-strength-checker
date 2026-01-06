@@ -164,6 +164,7 @@
                     <input type="text" id="generated-password" readonly placeholder="Your new key...">
                     <button id="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
                     <button id="train-btn" title="Train Memory"><i class="fas fa-brain"></i></button>
+                    <button id="qr-btn" title="Transfer to Mobile"><i class="fas fa-qrcode"></i></button>
                     <button id="refresh-gen-btn" title="Regenerate"><i class="fas fa-sync-alt"></i></button>
                 </div>
 
@@ -240,11 +241,27 @@
                     </div>
                 </div>
             </div>
+            <!-- QR TRANSFER MODAL -->
+            <div id="qr-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <button class="close-modal-qr close-modal"><i class="fas fa-times"></i></button>
+                    <div class="dojo-header">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h2>Transfer to Mobile</h2>
+                        <p>Scan to copy password.</p>
+                    </div>
+                    <div class="qr-container">
+                        <div id="qrcode"></div>
+                    </div>
+                    <p class="warning-text"><i class="fas fa-eye-slash"></i> Keep screen hidden while scanning!</p>
+                </div>
+            </div>
 
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <footer id="footer"></footer>
     <script src="script.js"></script>

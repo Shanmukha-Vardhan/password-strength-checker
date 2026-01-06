@@ -850,3 +850,21 @@ footer {
     background: var(--success);
     transform: scale(1.2);
 }
+
+/* QR Code specific styles */
+.qr-container {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    display: inline-block;
+    margin: 1.5rem 0;
+}
+
+#qrcode img {
+    margin: 0 auto;
+}
+
+.warning-text {
+    color: var(--warning);
+    font-weight: 600;
+}
