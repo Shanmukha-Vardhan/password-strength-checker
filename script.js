@@ -440,10 +440,120 @@ if (ageInput) {
     });
 }
 
+// Export CSV
+const btnExportHistory = document.getElementById('export-history-btn');
+if (btnExportHistory) {
+    btnExportHistory.addEventListener('click', () => {
+        if (!historyLog.length) return alert('No history to export!');
+        let csv = 'Date,Score\n';
+        historyLog.forEach(row => {
+            csv += `${row.date},${row.score}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'password_history.csv';
+        a.click();
+    });
+}
+
+// --- Memorization Dojo ---
+const btnTrain = document.getElementById('train-btn');
+const modalDojo = document.getElementById('dojo-modal');
+const closeModal = document.querySelector('.close-modal');
+const stepView = document.getElementById('dojo-step-view');
+const stepInput = document.getElementById('dojo-step-input');
+const dojoTarget = document.getElementById('dojo-target-display');
+const dojoInput = document.getElementById('dojo-input');
+const dojoTimerBar = document.getElementById('dojo-timer-bar');
+const dots = document.querySelectorAll('.dot');
+let trainingPwd = '';
+let trainingRound = 0;
+const ROUNDS = 3;
+
+if (btnTrain) {
+    btnTrain.addEventListener('click', () => {
+        const pwd = genOutput.value;
+        if (!pwd) return alert("Generate a password first!");
+        startDojo(pwd);
+    });
+}
+if (closeModal) {
+    closeModal.addEventListener('click', () => {
+        modalDojo.classList.add('hidden');
+    });
+}
+
+function startDojo(pwd) {
+    trainingPwd = pwd;
+    trainingRound = 0;
+    modalDojo.classList.remove('hidden');
+    nextRound();
+}
+
+function nextRound() {
+    if (trainingRound >= ROUNDS) {
+        // Win!
+        confetti({ particleCount: 150, spread: 80 });
+        dojoTarget.textContent = "MASTERED!";
+        stepView.classList.remove('hidden');
+        stepInput.classList.add('hidden');
+        setTimeout(() => modalDojo.classList.add('hidden'), 3000);
+        return;
+    }
+
+    // Reset UI
+    stepView.classList.remove('hidden');
+    stepInput.classList.add('hidden');
+    dojoInput.value = '';
+    dojoInput.className = '';
+    dojoTarget.textContent = trainingPwd;
+    updateDots();
+
+    // Timer
+    dojoTimerBar.style.transition = 'none';
+    dojoTimerBar.style.width = '100%';
+    setTimeout(() => {
+        dojoTimerBar.style.transition = 'width 5s linear';
+        dojoTimerBar.style.width = '0%';
+    }, 50);
+
+    setTimeout(() => {
+        showInputPhase();
+    }, 5000); // 5 seconds to memorize
+}
+
+function showInputPhase() {
+    stepView.classList.add('hidden');
+    stepInput.classList.remove('hidden');
+    dojoInput.focus();
+}
+
+if (dojoInput) {
+    dojoInput.addEventListener('input', () => {
+        if (dojoInput.value === trainingPwd) {
+            dojoInput.className = 'correct';
+            trainingRound++;
+            setTimeout(nextRound, 1000); // Wait a sec then next
+        } else if (dojoInput.value.length >= trainingPwd.length) {
+            dojoInput.className = 'wrong';
+        }
+    });
+}
+
+function updateDots() {
+    dots.forEach((d, i) => {
+        d.className = 'dot';
+        if (i < trainingRound) d.classList.add('success');
+        else if (i === trainingRound) d.classList.add('active');
+    });
+}
+
 function resetUI() {
     strengthText.textContent = 'Empty';
     strengthBar.style.width = '0';
-    patternFeedback.classList.add('hidden');
+    if (patternFeedback) patternFeedback.classList.add('hidden');
     breachStatus.textContent = '';
     entropyContainer.classList.add('entropy-hidden');
 }

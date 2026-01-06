@@ -163,6 +163,7 @@
                 <div class="gen-output-group">
                     <input type="text" id="generated-password" readonly placeholder="Your new key...">
                     <button id="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
+                    <button id="train-btn" title="Train Memory"><i class="fas fa-brain"></i></button>
                     <button id="refresh-gen-btn" title="Regenerate"><i class="fas fa-sync-alt"></i></button>
                 </div>
 
@@ -200,7 +201,43 @@
                 <div class="history-list">
                     <h3>Recent Checks</h3>
                     <ul id="history-items"></ul>
-                    <button id="clear-history">Clear History</button>
+                    <div class="history-actions">
+                        <button id="export-history-btn" class="action-btn secondary"><i class="fas fa-file-csv"></i>
+                            Export CSV</button>
+                        <button id="clear-history" class="action-btn secondary danger">Clear History</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEMORIZATION DOJO MODAL -->
+            <div id="dojo-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <button class="close-modal"><i class="fas fa-times"></i></button>
+                    <div class="dojo-header">
+                        <i class="fas fa-brain"></i>
+                        <h2>Memorization Dojo</h2>
+                        <p>Type the password to build muscle memory.</p>
+                    </div>
+
+                    <div id="dojo-step-view" class="dojo-step">
+                        <p>Memorize this:</p>
+                        <div id="dojo-target-display" class="dojo-large-text"></div>
+                        <div class="countdown-bar">
+                            <div id="dojo-timer-bar"></div>
+                        </div>
+                    </div>
+
+                    <div id="dojo-step-input" class="dojo-step hidden">
+                        <p>Type it out:</p>
+                        <input type="password" id="dojo-input" placeholder="Type here...">
+                        <div id="dojo-feedback"></div>
+                    </div>
+
+                    <div class="dojo-progress">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
                 </div>
             </div>
 

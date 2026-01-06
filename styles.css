@@ -697,3 +697,156 @@ footer {
         font-size: 0.75rem;
     }
 }
+
+/* History Actions */
+.history-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.action-btn.danger {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.action-btn.danger:hover {
+    background: #fef2f2;
+}
+
+/* Modal Overlay base */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+/* Dojo Specifics */
+.dojo-header i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.dojo-header h2 {
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.dojo-large-text {
+    font-size: 1.5rem;
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--text-main);
+    margin: 1.5rem 0;
+    word-break: break-all;
+    background: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed var(--primary);
+}
+
+.countdown-bar {
+    height: 4px;
+    background: var(--bg-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+#dojo-timer-bar {
+    height: 100%;
+    width: 100%;
+    background: var(--primary);
+}
+
+.dojo-step {
+    margin-top: 1.5rem;
+}
+
+#dojo-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    text-align: center;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-main);
+}
+
+#dojo-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+#dojo-input.correct {
+    border-color: var(--success);
+    background: #f0fdf4;
+}
+
+#dojo-input.wrong {
+    border-color: var(--danger);
+    background: #fef2f2;
+}
+
+.dojo-progress {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: var(--primary);
+}
+
+.dot.success {
+    background: var(--success);
+    transform: scale(1.2);
+}
